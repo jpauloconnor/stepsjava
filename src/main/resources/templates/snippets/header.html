@@ -12,8 +12,10 @@
 			</div>
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
-					<li th:class="${#httpServletRequest.requestURI.equals('/')?'active':null}"><a href="#" th:href="@{/}">Home</a></li>
-                    <li th:class="${#httpServletRequest.requestURI.contains('contact')?'active':null}"><a href="#" th:href="@{/contacts}">Contacts</a></li>
+					<li sec:authorize="hasRole('ROLE_ADMIN')" th:class="${#httpServletRequest.requestURI.contains('user')?'active':null}"><a href="#" th:href="@{/users}">Users</a></li>
+                   <li sec:authorize="hasRole('ROLE_USER')" th:class="${#httpServletRequest.requestURI.contains('contact')?'active':null}"><a href="#" th:href="@{/contacts}">Contacts</a></li>
+                   <li sec:authorize="isAuthenticated()" th:class="${#httpServletRequest.requestURI.equals('/myprofile')?'active':null}"><a href="#" th:href="@{/myprofile}">My Profile</a></li>
+
 				</ul>
 				<ul class="nav navbar-nav navbar-right" sec:authorize="isAuthenticated()">
 					<li><a href="#" onclick="$('#logoutForm').submit();">Logout</a></li>

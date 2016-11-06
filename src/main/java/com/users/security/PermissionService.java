@@ -1,7 +1,8 @@
 package com.users.security;
+
+import static com.users.security.Role.ROLE_ADMIN;
+import static com.users.security.Role.ROLE_USER;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
-import static com.users.security.Role.ADMIN;
-import static com.users.security.Role.USER;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,15 +16,19 @@ import com.users.repositories.UserRepository;
 public class PermissionService {
 
 	@Autowired
-	private UserRepository userRepo;
+	private UserRepository userRepository;
 
 	@Autowired
-	private ContactRepository contactRepo;
-	
+	private ContactRepository contactRepository;
+
 	private UsernamePasswordAuthenticationToken getToken() {
 		return (UsernamePasswordAuthenticationToken) getContext().getAuthentication();
 	}
-	
+
+	public long findCurrentUserId() {
+		return userRepository.findByEmail(getToken().getName()).get(0).getId();
+	}
+
 	public boolean hasRole(Role role) {
 		for (GrantedAuthority ga : getToken().getAuthorities()) {
 			if (role.toString().equals(ga.getAuthority())) {
@@ -32,19 +37,14 @@ public class PermissionService {
 		}
 		return false;
 	}
-	
-	public boolean canEditUser(long userId) {
-		return hasRole(ADMIN) || (hasRole(USER) && findCurrentUserId() == userId);
-	}
 
-	public long findCurrentUserId() {
-		return userRepo.findByEmail(getToken().getName()).get(0).getId();
+	public boolean canAccessUser(long userId) {
+		return hasRole(ROLE_ADMIN) || (hasRole(ROLE_USER) && findCurrentUserId() == userId);
 	}
 
 	public boolean canEditContact(long contactId) {
-		return hasRole(USER) && contactRepo.findByUserIdAndId(findCurrentUserId(), contactId) != null;
+		return hasRole(ROLE_USER)
+				&& contactRepository.findByUserIdAndId(findCurrentUserId(), contactId) != null;
 	}
-
-
 
 }
