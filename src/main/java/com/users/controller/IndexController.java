@@ -142,4 +142,23 @@ public class IndexController {
 
 		return profile(userId, model);
 	}
+	
+	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/user/create", method = RequestMethod.GET)
+	public String createContact(Model model) {
+		model.addAttribute("user", new User());
+		
+		return "userCreate";
+	}
+	
+	@Secured("ROLE_ADMIN")
+	@RequestMapping(value = "/user/create", method = RequestMethod.POST)
+	public String createContact(@ModelAttribute User user,
+			@RequestParam("file") MultipartFile file, Model model) {
+
+		User savedUser = userRepo.save(user);
+		
+	return profileSave(savedUser, savedUser.getId(), false, file, model);
+	}
+	
 }
