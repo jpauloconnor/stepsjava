@@ -46,6 +46,17 @@ public class ContactController {
 				contactRepo.findAllByUserIdOrderByFirstNameAscLastNameAsc(currentUserId));
 		return "listContacts";
 	}
+	
+	@Secured("ROLE_USER")
+	@RequestMapping(value = "/contact/search", method = RequestMethod.POST)
+	public String searchUsers(@RequestParam("search") String search, Model model) {
+		log.debug("Searching by " + search);
+		model.addAttribute("contacts",
+				contactRepo.findByLastNameOrFirstNameOrEmailOrTwitterHandleOrFacebookUrlIgnoreCase(
+						search, search, search, search, search));
+		model.addAttribute("search", search);
+		return "listContacts";
+	}
 
 	@Secured("ROLE_USER")
 	@RequestMapping("/contact/{contactId}")
