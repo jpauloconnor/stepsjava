@@ -54,4 +54,15 @@ public class PermissionService {
 				&& contactRepository.findByUserIdAndId(findCurrentUserId(), contactId) != null;
 	}
 
+	public String getCurrentEmail() {
+		return getToken().getName();
+	}
+	
+	public User findCurrentUser() {
+		List<User> users = userRepository.findByEmail(getToken().getName());
+		return users != null && !users.isEmpty() ? users.get(0) : new User();
+	}
+
+
+
 }
